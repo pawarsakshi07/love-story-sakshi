@@ -208,7 +208,7 @@ async function compressImage(file){
       const img=new Image();
 
       img.onload=()=>{
-        const max=900;
+        const max=600;
         let w=img.width;
         let h=img.height;
 
@@ -228,7 +228,7 @@ async function compressImage(file){
           r.onload=()=>resolve(r.result);
           r.onerror=reject;
           r.readAsDataURL(blob);
-        },"image/jpeg",.55);
+        },"image/jpeg",.40);
       };
 
       img.onerror=reject;
