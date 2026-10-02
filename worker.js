@@ -151,8 +151,31 @@ button:disabled{opacity:.6}
 
 <label>Photos</label>
 <div class="photoBox">
-<input id="photos" type="file" accept="image/*" multiple>
-<div class="note">You can select up to 8 photos. Photos will automatically be resized.</div>
+<label>Photo 1</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 2</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 3</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 4</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 5</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 6</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 7</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<label>Photo 8</label>
+<input class="photoInput" type="file" accept="image/*">
+
+<div class="note">You can add up to 8 photos. ❤️</div>
 </div>
 
 <label>Final Special Photo</label>
@@ -227,7 +250,10 @@ async function generatePage(){
   const letter=document.getElementById("letter").value.trim();
   const secret=document.getElementById("secret").value.trim();
 
-  const files=Array.from(document.getElementById("photos").files).slice(0,8);
+  const files=Array.from(document.querySelectorAll(".photoInput"))
+  .map(input=>input.files[0])
+  .filter(Boolean)
+  .slice(0,8);
   const finalFile=document.getElementById("finalPhoto").files[0];
 
   if(!yourName||!theirName||!wish||!letter){
