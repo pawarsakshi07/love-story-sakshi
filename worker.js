@@ -200,46 +200,87 @@ button:disabled{opacity:.6}
 </div>
 
 <script>
+
 async function compressImage(file){
   return new Promise((resolve,reject)=>{
+    if(!file){
+      reject(new Error("No photo selected."));
+      return;
+    }
+
     const reader=new FileReader();
 
     reader.onload=()=>{
       const img=new Image();
 
       img.onload=()=>{
-        const max=400;
-        let w=img.width;
-        let h=img.height;
+        try{
+          const max=400;
+          let w=img.width;
+          let h=img.height;
 
-        if(w>max){
-          h=h*max/w;
-          w=max;
+          if(!w || !h){
+            reject(new Error("This photo could not be read."));
+            return;
+          }
+
+          if(w>max){
+            h=Math.round(h*max/w);
+            w=max;
+          }
+
+          const canvas=document.createElement("canvas");
+          canvas.width=w;
+          canvas.height=h;
+
+          const ctx=canvas.getContext("2d");
+
+          if(!ctx){
+            reject(new Error("Your browser could not process this photo."));
+            return;
+          }
+
+          ctx.drawImage(img,0,0,w,h);
+
+          canvas.toBlob(blob=>{
+            if(!blob){
+              reject(new Error("This photo could not be compressed. Please choose another photo."));
+              return;
+            }
+
+            const r=new FileReader();
+
+            r.onload=()=>{
+              resolve(r.result);
+            };
+
+            r.onerror=()=>{
+              reject(new Error("A photo could not be read."));
+            };
+
+            r.readAsDataURL(blob);
+
+          },"image/jpeg",0.25);
+
+        }catch(e){
+          reject(new Error("This photo could not be processed."));
         }
-
-        const canvas=document.createElement("canvas");
-        canvas.width=w;
-        canvas.height=h;
-
-        canvas.getContext("2d").drawImage(img,0,0,w,h);
-
-        canvas.toBlob(blob=>{
-          const r=new FileReader();
-          r.onload=()=>resolve(r.result);
-          r.onerror=reject;
-          r.readAsDataURL(blob);
-        },"image/jpeg",.25);
       };
 
-      img.onerror=reject;
+      img.onerror=()=>{
+        reject(new Error("One of the selected photos could not be opened. Please choose a JPG or PNG photo."));
+      };
+
       img.src=reader.result;
     };
 
-    reader.onerror=reject;
+    reader.onerror=()=>{
+      reject(new Error("A selected photo could not be read."));
+    };
+
     reader.readAsDataURL(file);
   });
 }
-
 async function generatePage(){
   const btn=document.getElementById("generate");
 
